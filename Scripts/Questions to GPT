@@ -1,0 +1,42 @@
+So on Google sheet we have these columns from A to H 
+A Timestamp - shows time when google form data is inserted to the sheet
+B Location
+C Issue Category
+D Issue Description
+E Issue Solution
+F Resolver
+G Issue Log Time
+H Issue resolve time
+
+so what I want us to do is to sync all these into a card(trello) but in this creteria
+since all these are columns, display each row on its card on list id 63c00d1b02ad370027927314 and list title "incoming"
+# Set up Trello API credentials
+TRELLO_KEY = 'de191ae0dcf871ec94a2c3a9e301f9ff'
+TRELLO_TOKEN = 'ATTAa60e29643e75d864c757c0e614df0174ad436b9dbbbf7f99a36f9c51cf3799be0DD6667E'
+BOARD_ID = '66c097ffa07e57790a36a234'
+google sheet id we are pulling data from to trello is 
+1hn-lNNq5mqSIVH4BvnFmTEdvbcFi7GzzSymGSxfxvII
+google sheet name is "Form Responses 1"
+GOOGLE_CREDENTIALS_FILE = crested-trainer-292909-509d7f962395.json
+
+further instructions are:
+B to be the card title
+the rest that A,C,D,E,F,G,H to be on the card description
+Remember A to H are headings and data that needs to be fed on card starts from 
+row 2 of the google sheet. so again make sure that data on each row will befed 
+on its own card i.e data on row 2 on sheets to be fed on card 1, data on 
+row 3 on sheets to be  fed on  card 2 and so on.
+
+
+sudo systemctl status sync_sheet_to_trello.service
+
+
+now I need to sync Trello board to Google sheet.
+here are the objectives:
+1. Sync List Titles to Columns.
+2. Sync Cards  to Rows. Where by each card occupies each cell in each row
+    under its list title on the column. Each card on acell sshould contain description, custom field if it is applicable, members assigned to the card,  due date, and checklist items, timestamps of how often the cards are moved around to different lists. Just neatly visualize these for future dashboard lookerstudio visualizations integration.
+3. Make the titles a bit bold size 11
+Apply all these on sheet 1.
+
+Use this script but dont change anything that is on sheet 2

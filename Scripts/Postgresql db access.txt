@@ -1,0 +1,15 @@
+https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v8.12/windows/pgadmin4-8.12-x64.exe
+
+#use the above link to download  the installer for windows. To manage odoo database like in sql studio
+
+Postgres IP : 34.135.222.100
+Username : sqlserver
+Database : lintons_test
+Password : HAnKgsD1wc6Dh31r
+
+#To connect to mysql db academy
+
+Mysql IP : 34.68.39.61
+Username : ashte
+Password : 1234five
+Database : ashte

@@ -1,0 +1,179 @@
+#1. Update the package list:
+
+sudo apt-get update
+
+#2. Upgrade installed packages:
+
+sudo apt-get upgrade
+
+#Install Python 3 Pip
+
+#Pip is the package installer for Python, required to manage Python libraries:
+
+sudo apt-get install -y python3-pip
+
+#Install Development Libraries and Dependencies
+
+#These libraries are necessary for building and running Odoo and its dependencies:
+
+sudo apt-get install -y python3-dev libxml2-dev libxslt1-dev zlib1g-dev libsasl2-dev libldap2-dev build-essential libssl-dev libffi-dev libmysqlclient-dev libjpeg-dev libpq-dev libjpeg8-dev liblcms2-dev libblas-dev libatlas-base-dev
+
+#Install Node.js and NPM
+
+#Node.js is required for front-end tasks:
+
+sudo apt-get install -y npm
+
+#Create a symlink for Node.js to ensure compatibility with some applications:
+
+sudo ln -s /usr/bin/nodejs /usr/bin/node #if it gives this error "ln: failed to create symbolic link '/usr/bin/node': File exists" then its fine, move to the next step
+
+#Install Less and Clean CSS Plugin
+
+#Less is a CSS pre-processor, and clean CSS helps minify CSS files:
+
+sudo npm install -g less less-plugin-clean-css
+sudo apt-get install -y node-less
+
+#Install PostgreSQL:
+
+sudo apt-get install -y postgresql
+
+#Switch to the PostgreSQL user:
+
+sudo su - postgres
+#**************HAnKgsD1wc6Dh31r***************
+
+#Create a new database user for Odoo:
+
+createuser --createdb --username postgres --no-createrole --superuser --pwprompt sqlserver  #sqlserver. This is the name of the PostgreSQL user.
+
+#Exit the PostgreSQL session:
+
+exit
+
+#Create a system user with its home directory:
+
+sudo adduser --system --home=/opt/odoo18 --group odoo18
+
+#Install Git: Some latest linux server versions comes with git installed natively
+
+sudo apt-get install -y git
+
+#Switch to the Odoo system user:
+
+sudo su - odoo18 -s /bin/bash
+
+#Clone the Odoo repository:
+
+git clone https://www.github.com/odoo/odoo --depth 1 --branch master --single-branch .
+
+#Exit the Odoo user session:
+
+exit
+
+#Install the Python virtual environment package:
+
+sudo apt install -y python3-venv
+
+#Create a virtual environment in the Odoo directory:
+
+sudo python3 -m venv /opt/odoo18/venv
+
+#Activate the virtual environment:
+
+sudo -s
+cd /opt/odoo18/
+source venv/bin/activate
+
+#Install Python dependencies:
+
+pip install -r requirements.txt
+
+#Install wkhtmltopdf to generate PDF reports:
+
+sudo wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb
+sudo dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb #you will encounter a package error which is fine, just move to the next command
+sudo apt install -f #press 'y' to continue
+
+#Deactivate the virtual environment:
+
+deactivate
+
+#Copy the default configuration file:
+
+sudo cp /opt/odoo18/debian/odoo.conf /etc/odoo18.conf
+
+#Edit the configuration file:
+
+sudo nano /etc/odoo18.conf
+#makesure your 'odoo18.conf' looks like this below... only change db_host with your ip can be 'localhost' or public ip
+[options]
+; This is the password that allows database operations:
+; admin_passwd = admin
+db_host = 34.135.222.100 #change this
+db_port = 5432 
+db_user = sqlserver
+db_password = HAnKgsD1wc6Dh31r # change this
+addons_path = /opt/odoo18/addons          
+default_productivity_apps = True
+logfile = /var/log/odoo/odoo18.log
+
+#Set file permissions:
+
+sudo chown odoo18: /etc/odoo18.conf
+sudo chmod 640 /etc/odoo18.conf
+sudo mkdir /var/log/odoo
+sudo chown odoo18:root /var/log/odoo
+
+#Create a new service file:
+
+sudo nano /etc/systemd/system/odoo18.service
+
+#Add the following content:
+
+[Unit]
+Description=Odoo18
+Documentation=http://www.odoo.com
+[Service]
+Type=simple
+User=odoo18
+ExecStart=/opt/odoo18/venv/bin/python3.12 /opt/odoo18/odoo-bin -c /etc/odoo18.conf
+[Install]
+WantedBy=default.target
+
+#Set file permissions:
+
+sudo chmod 755 /etc/systemd/system/odoo18.service
+sudo chown root: /etc/systemd/system/odoo18.service
+
+#Start the Odoo service:
+
+sudo systemctl start odoo18.service
+
+
+#next step is to allow the database to be remotely connected
+
+sudo nano /etc/postgresql/16/main/pg_hba.conf
+#add the following line at the end of the file
+host    all             all             0.0.0.0/0               md5
+#save and exit ('ctrl+x' then 'y' then 'Enter')
+
+#next edit
+sudo nano /etc/postgresql/16/main/postgresql.conf
+#look for a line 'listen_addressess = 'localhost'  and uncomment it then change it to:
+listen_addresses = '*'
+#save and exit ('ctrl+x' then 'y' then 'Enter')
+
+#restart both services
+sudo systemctl restart odoo18 postgresql
+
+#To ensure Odoo starts automatically when the server boots:
+
+sudo systemctl enable odoo18.service
+
+#To access Odoo 18, open your browser and navigate to:
+
+http://<your_domain_or_IP_address>:8069
+
+
